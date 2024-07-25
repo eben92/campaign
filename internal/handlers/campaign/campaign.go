@@ -51,9 +51,9 @@ func validateCampaign(c models.Campaign) error {
 		return errors.New("end date must be after start date")
 	}
 
-	if c.BannerURL == "" {
-		return errors.New("banner url is required")
-	}
+	// if c.BannerURL == "" {
+	// 	return errors.New("banner url is required")
+	// }
 
 	return nil
 }
