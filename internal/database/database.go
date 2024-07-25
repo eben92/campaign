@@ -42,7 +42,7 @@ func New() Service {
 
 	}
 
-	slog.Info("Connected to database successfully", "Host", host, "Port", port)
+	slog.Info("connecting to database", "Host", host, "Port", port)
 
 	db := client.Database("campaign")
 
