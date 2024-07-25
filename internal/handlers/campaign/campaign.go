@@ -65,7 +65,7 @@ func (c *campaignHandler) CreateCampaignHandler(w http.ResponseWriter, r *http.R
 	defer r.Body.Close()
 
 	if err != nil {
-		res := utils.WrapInResponse("error decoding request body", nil)
+		res := utils.WrapInResponse("invalid request body. start date and end date is required", nil)
 		w.WriteHeader(http.StatusBadRequest)
 		_, _ = w.Write(res)
 
