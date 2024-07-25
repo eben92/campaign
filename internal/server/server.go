@@ -2,6 +2,7 @@ package server
 
 import (
 	"fmt"
+	"log/slog"
 	"net/http"
 	"os"
 	"strconv"
@@ -19,6 +20,8 @@ type Server struct {
 }
 
 func NewServer() *http.Server {
+	slog.Info("Starting server")
+
 	port, _ := strconv.Atoi(os.Getenv("PORT"))
 	NewServer := &Server{
 		port: port,
@@ -35,5 +38,6 @@ func NewServer() *http.Server {
 		WriteTimeout: 30 * time.Second,
 	}
 
+	slog.Info("Server started", "Port", NewServer.port)
 	return server
 }

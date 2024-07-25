@@ -1,6 +1,8 @@
 package server
 
 import (
+	"campaign/internal/handlers/auth"
+	"campaign/internal/utils/jwt"
 	"encoding/json"
 	"log"
 	"net/http"
@@ -16,21 +18,43 @@ func (s *Server) RegisterRoutes() http.Handler {
 	r.Use(middleware.CleanPath)
 	r.Use(middleware.AllowContentType("application/json", "application/x-www-form-urlencoded", "multipart/form-data", "text/plain", "text/html"))
 	r.Use(cors.Handler(cors.Options{
-		AllowedOrigins:   []string{"https://*", "http://*"},
-		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
-		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token", "Accept-Encoding"},
-		AllowCredentials: true,
+		AllowedOrigins: []string{"https://*", "http://*"},
+		AllowedMethods: []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowedHeaders: []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token", "Accept-Encoding"},
 	}))
 
-	r.Route("/api", func(gr chi.Router) {
-		gr.Get("/", s.HelloWorldHandler)
+	r.Use(func(next http.Handler) http.Handler {
+		hfn := func(w http.ResponseWriter, r *http.Request) {
+			w.Header().Set("Content-Type", "application/json")
+
+			next.ServeHTTP(w, r)
+		}
+		return http.HandlerFunc(hfn)
+	})
+
+	r.Route("/api", func(api chi.Router) {
+		api.Get("/health", s.healthHandler)
+
+		api.Route("/", s.authController)
+
+		api.Group(func(sapi chi.Router) {
+			sapi.Use(jwt.Authenticator())
+			sapi.Get("/", s.HelloWorldHandler)
+
+		})
+
 	})
 
 	r.Get("/", s.HelloWorldHandler)
-
-	r.Get("/health", s.healthHandler)
-
 	return r
+}
+
+func (s *Server) authController(r chi.Router) {
+	client := s.db.Database()
+	handler := auth.NewAuthHandler(client)
+
+	r.Post("/signin", handler.Signin)
+	r.Post("/create-account", handler.Signup)
 }
 
 func (s *Server) HelloWorldHandler(w http.ResponseWriter, r *http.Request) {
