@@ -9,6 +9,7 @@ import (
 	"errors"
 	"net/http"
 
+	"github.com/go-chi/chi/v5"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
@@ -120,7 +121,7 @@ func (c *campaignHandler) GetCampaignsHandler(w http.ResponseWriter, r *http.Req
 }
 
 func (c *campaignHandler) GetCampaignByIDHandler(w http.ResponseWriter, r *http.Request) {
-	id := r.URL.Query().Get("id")
+	id := chi.URLParam(r, "id")
 
 	dbM := database.NewDatabaseService(r.Context(), c.db, models.CampaignsCollection)
 	campaignService := campaignservice.NewService(r.Context(), dbM)
@@ -142,7 +143,7 @@ func (c *campaignHandler) GetCampaignByIDHandler(w http.ResponseWriter, r *http.
 }
 
 func (c *campaignHandler) UpdateCampaignHandler(w http.ResponseWriter, r *http.Request) {
-	id := r.URL.Query().Get("id")
+	id := chi.URLParam(r, "id")
 	reqBody := models.Campaign{}
 
 	err := json.NewDecoder(r.Body).Decode(&reqBody)
@@ -184,7 +185,7 @@ func (c *campaignHandler) UpdateCampaignHandler(w http.ResponseWriter, r *http.R
 }
 
 func (c *campaignHandler) DeleteCampaignHandler(w http.ResponseWriter, r *http.Request) {
-	id := r.URL.Query().Get("id")
+	id := chi.URLParam(r, "id")
 
 	dbM := database.NewDatabaseService(r.Context(), c.db, models.CampaignsCollection)
 
