@@ -6,7 +6,6 @@ import (
 	authservice "campaign/internal/services/auth"
 	"campaign/internal/utils"
 	"encoding/json"
-	"log/slog"
 	"net/http"
 	"net/mail"
 
@@ -31,22 +30,6 @@ type Login struct {
 	Password string `json:"password"`
 }
 
-func WrapInResponse(message string, data interface{}) []byte {
-	res := utils.ApiResponse{
-		Message: message,
-		Data:    data,
-	}
-	b, err := json.Marshal(res)
-
-	if err != nil {
-		slog.Error("Error marshalling response", "error", err)
-
-		return nil
-	}
-
-	return b
-}
-
 func (a *authHandler) Signin(w http.ResponseWriter, r *http.Request) {
 	reqBody := Login{}
 
@@ -54,7 +37,7 @@ func (a *authHandler) Signin(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 
 	if err != nil {
-		res := WrapInResponse("error decoding request body", nil)
+		res := utils.WrapInResponse("error decoding request body", nil)
 
 		w.WriteHeader(http.StatusBadRequest)
 		_, _ = w.Write(res)
@@ -62,7 +45,7 @@ func (a *authHandler) Signin(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if reqBody.Email == "" || reqBody.Password == "" {
-		res := WrapInResponse("email and password are required", nil)
+		res := utils.WrapInResponse("email and password are required", nil)
 
 		w.WriteHeader(http.StatusBadRequest)
 		_, _ = w.Write(res)
@@ -76,14 +59,14 @@ func (a *authHandler) Signin(w http.ResponseWriter, r *http.Request) {
 	result, err := authService.Login(reqBody.Email, reqBody.Password)
 
 	if err != nil {
-		res := WrapInResponse(err.Error(), nil)
+		res := utils.WrapInResponse(err.Error(), nil)
 
 		w.WriteHeader(http.StatusUnauthorized)
 		_, _ = w.Write(res)
 		return
 	}
 
-	res := WrapInResponse("login successful", result)
+	res := utils.WrapInResponse("login successful", result)
 
 	w.WriteHeader(http.StatusOK)
 	_, _ = w.Write(res)
@@ -104,7 +87,7 @@ func (a *authHandler) Signup(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 
 	if err != nil {
-		res := WrapInResponse("error decoding request body", nil)
+		res := utils.WrapInResponse("error decoding request body", nil)
 
 		w.WriteHeader(http.StatusBadRequest)
 		_, _ = w.Write(res)
@@ -112,7 +95,7 @@ func (a *authHandler) Signup(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if reqBody.Email == "" || reqBody.Password == "" || reqBody.Msisdn == "" || reqBody.Name == "" {
-		res := WrapInResponse("email, password and msisdn is required", nil)
+		res := utils.WrapInResponse("email, password and msisdn is required", nil)
 
 		w.WriteHeader(http.StatusBadRequest)
 		_, _ = w.Write(res)
@@ -120,7 +103,7 @@ func (a *authHandler) Signup(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if len(reqBody.Password) < 6 {
-		res := WrapInResponse("password must be at least 6 characters", nil)
+		res := utils.WrapInResponse("password must be at least 6 characters", nil)
 
 		w.WriteHeader(http.StatusBadRequest)
 		_, _ = w.Write(res)
@@ -128,7 +111,7 @@ func (a *authHandler) Signup(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if len(reqBody.Msisdn) < 10 {
-		res := WrapInResponse("msisdn must be at least 10 characters", nil)
+		res := utils.WrapInResponse("msisdn must be at least 10 characters", nil)
 
 		w.WriteHeader(http.StatusBadRequest)
 		_, _ = w.Write(res)
@@ -139,7 +122,7 @@ func (a *authHandler) Signup(w http.ResponseWriter, r *http.Request) {
 
 	if err != nil {
 
-		res := WrapInResponse("invalid email address", nil)
+		res := utils.WrapInResponse("invalid email address", nil)
 
 		w.WriteHeader(http.StatusBadRequest)
 		_, _ = w.Write(res)
@@ -147,7 +130,7 @@ func (a *authHandler) Signup(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if len(reqBody.Name) < 3 {
-		res := WrapInResponse("name must be at least 3 characters", nil)
+		res := utils.WrapInResponse("name must be at least 3 characters", nil)
 
 		w.WriteHeader(http.StatusBadRequest)
 		_, _ = w.Write(res)
@@ -161,14 +144,14 @@ func (a *authHandler) Signup(w http.ResponseWriter, r *http.Request) {
 	err = authService.Register(reqBody.Name, reqBody.Email, reqBody.Password, reqBody.Msisdn)
 
 	if err != nil {
-		res := WrapInResponse(err.Error(), nil)
+		res := utils.WrapInResponse(err.Error(), nil)
 
 		w.WriteHeader(http.StatusUnauthorized)
 		_, _ = w.Write(res)
 		return
 	}
 
-	res := WrapInResponse("account created successfully", nil)
+	res := utils.WrapInResponse("account created successfully", nil)
 
 	w.WriteHeader(http.StatusOK)
 	_, _ = w.Write(res)

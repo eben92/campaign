@@ -2,6 +2,7 @@ package server
 
 import (
 	"campaign/internal/handlers/auth"
+	"campaign/internal/handlers/campaign"
 	"campaign/internal/utils/jwt"
 	"encoding/json"
 	"log"
@@ -32,20 +33,21 @@ func (s *Server) RegisterRoutes() http.Handler {
 		return http.HandlerFunc(hfn)
 	})
 
+	r.Get("/", s.HelloWorldHandler)
+
 	r.Route("/api", func(api chi.Router) {
 		api.Get("/health", s.healthHandler)
-
 		api.Route("/", s.authController)
 
-		api.Group(func(sapi chi.Router) {
-			sapi.Use(jwt.Authenticator())
-			sapi.Get("/", s.HelloWorldHandler)
+		api.Group(func(prot_api chi.Router) {
+			prot_api.Use(jwt.Authenticator())
+
+			prot_api.Route("/campaigns", s.campaignController)
 
 		})
 
 	})
 
-	r.Get("/", s.HelloWorldHandler)
 	return r
 }
 
@@ -55,6 +57,18 @@ func (s *Server) authController(r chi.Router) {
 
 	r.Post("/signin", handler.Signin)
 	r.Post("/create-account", handler.Signup)
+}
+
+func (s *Server) campaignController(r chi.Router) {
+	client := s.db.Database()
+	handler := campaign.NewCampaignHandler(client)
+
+	r.Get("/", handler.GetCampaignsHandler)
+	r.Post("/", handler.CreateCampaignHandler)
+	r.Get("/{id}", handler.GetCampaignByIDHandler)
+	r.Put("/{id}", handler.UpdateCampaignHandler)
+	r.Delete("/{id}", handler.DeleteCampaignHandler)
+
 }
 
 func (s *Server) HelloWorldHandler(w http.ResponseWriter, r *http.Request) {
