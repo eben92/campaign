@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type CampaignService interface {
@@ -42,14 +43,13 @@ func (s *service) CreateCampaign(c models.Campaign) error {
 
 	s.db.SetCollection(models.CampaignsCollection)
 
-	c.CreatedBy = userID.Sub
 	err = s.db.InsertOne(bson.M{
 		"name":        c.Name,
 		"description": c.Description,
-		"start_date":  c.StartDate,
-		"end_date":    c.EndDate,
+		"start_date":  c.StartDate.Local(),
+		"end_date":    c.EndDate.Local(),
 		"banner_url":  c.BannerURL,
-		"created_by":  c.CreatedBy,
+		"created_by":  userID.Sub,
 		"created_at":  c.CreatedAt,
 		"updated_at":  c.UpdatedAt,
 	})
@@ -101,7 +101,18 @@ func (s *service) GetCampaignByID(id string) (models.Campaign, error) {
 
 	s.db.SetCollection(models.CampaignsCollection)
 
-	err = s.db.FindOne(bson.M{"_id": id, "created_by": user.Sub}, &campaign)
+	objid, err := primitive.ObjectIDFromHex(id)
+
+	if err != nil {
+		slog.Error("Error converting id to object id", "error", err)
+
+		return campaign, fmt.Errorf("invalid campaign id: %s", id)
+
+	}
+
+	err = s.db.FindOne(bson.M{
+		"_id":        objid,
+		"created_by": user.Sub}, &campaign)
 
 	if err != nil {
 		slog.Error("Error getting campaign", "error", err)
@@ -121,13 +132,22 @@ func (s *service) UpdateCampaign(id string, c models.Campaign) error {
 		return errors.New("error updating campaign")
 	}
 
+	objid, err := primitive.ObjectIDFromHex(id)
+
+	if err != nil {
+		slog.Error("Error converting id to object id", "error", err)
+
+		return fmt.Errorf("invalid campaign id: %s", id)
+
+	}
+
 	s.db.SetCollection(models.CampaignsCollection)
 
-	err = s.db.UpdateOne(bson.M{"_id": id, "created_by": user.Sub}, bson.M{
+	err = s.db.UpdateOne(bson.M{"_id": objid, "created_by": user.Sub}, bson.M{
 		"name":        c.Name,
 		"description": c.Description,
-		"start_date":  c.StartDate,
-		"end_date":    c.EndDate,
+		"start_date":  c.StartDate.Local(),
+		"end_date":    c.EndDate.Local(),
 		"banner_url":  c.BannerURL,
 		"updated_at":  time.Now(),
 	})
@@ -150,9 +170,18 @@ func (s *service) DeleteCampaign(id string) error {
 		return errors.New("error deleting campaign")
 	}
 
+	objid, err := primitive.ObjectIDFromHex(id)
+
+	if err != nil {
+		slog.Error("Error converting id to object id", "error", err)
+
+		return fmt.Errorf("invalid campaign id: %s", id)
+
+	}
+
 	s.db.SetCollection(models.CampaignsCollection)
 
-	err = s.db.DeleteOne(bson.M{"_id": id, "created_by": user.Sub})
+	err = s.db.DeleteOne(bson.M{"_id": objid, "created_by": user.Sub})
 
 	if err != nil {
 		slog.Error("Error deleting campaign", "error", err)
