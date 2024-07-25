@@ -64,7 +64,7 @@ func (s *service) CreateCampaign(c models.Campaign) error {
 }
 
 func (s *service) GetCampaigns() ([]models.Campaign, error) {
-	var campaigns []models.Campaign
+	campaigns := []models.Campaign{}
 
 	user, err := jwt.GetAuthContext(s.ctx)
 
