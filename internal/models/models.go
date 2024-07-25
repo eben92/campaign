@@ -1,6 +1,8 @@
 package models
 
-import "time"
+import (
+	"time"
+)
 
 type Collections string
 
@@ -26,7 +28,7 @@ type Campaign struct {
 	Description string    `json:"description"`
 	StartDate   time.Time `json:"start_date" bson:"start_date"`
 	EndDate     time.Time `json:"end_date" bson:"end_date"`
-	BannerURL   string    `json:"banner_url"`
+	BannerURL   string    `json:"banner_url" bson:"banner_url"`
 	CreatedBy   string    `json:"created_by"`
 	CreatedAt   time.Time `json:"created_at" bson:"created_at"`
 	UpdatedAt   time.Time `json:"updated_at" bson:"updated_at"`
