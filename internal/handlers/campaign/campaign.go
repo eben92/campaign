@@ -89,6 +89,8 @@ func (c *campaignHandler) CreateCampaignHandler(w http.ResponseWriter, r *http.R
 		res := utils.WrapInResponse(err.Error(), nil)
 		w.WriteHeader(http.StatusInternalServerError)
 		_, _ = w.Write(res)
+
+		return
 	}
 
 	res := utils.WrapInResponse("campaign created successfully", nil)
@@ -108,6 +110,7 @@ func (c *campaignHandler) GetCampaignsHandler(w http.ResponseWriter, r *http.Req
 		res := utils.WrapInResponse(err.Error(), nil)
 		w.WriteHeader(http.StatusInternalServerError)
 		_, _ = w.Write(res)
+		return
 	}
 
 	res := utils.WrapInResponse("campaigns retrieved successfully", campaigns)
@@ -129,7 +132,7 @@ func (c *campaignHandler) GetCampaignByIDHandler(w http.ResponseWriter, r *http.
 		res := utils.WrapInResponse(err.Error(), nil)
 		w.WriteHeader(http.StatusInternalServerError)
 		_, _ = w.Write(res)
-
+		return
 	}
 
 	res := utils.WrapInResponse("campaign retrieved successfully", campaign)
@@ -171,6 +174,7 @@ func (c *campaignHandler) UpdateCampaignHandler(w http.ResponseWriter, r *http.R
 		res := utils.WrapInResponse(err.Error(), nil)
 		w.WriteHeader(http.StatusInternalServerError)
 		_, _ = w.Write(res)
+		return
 	}
 
 	res := utils.WrapInResponse("campaign updated successfully", nil)
@@ -192,6 +196,7 @@ func (c *campaignHandler) DeleteCampaignHandler(w http.ResponseWriter, r *http.R
 		res := utils.WrapInResponse(err.Error(), nil)
 		w.WriteHeader(http.StatusInternalServerError)
 		_, _ = w.Write(res)
+		return
 	}
 
 	res := utils.WrapInResponse("campaign deleted successfully", nil)
