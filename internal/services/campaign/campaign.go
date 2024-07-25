@@ -50,8 +50,8 @@ func (s *service) CreateCampaign(c models.Campaign) error {
 		"end_date":    c.EndDate.Local(),
 		"banner_url":  c.BannerURL,
 		"created_by":  userID.Sub,
-		"created_at":  c.CreatedAt,
-		"updated_at":  c.UpdatedAt,
+		"created_at":  time.Now().Local(),
+		"updated_at":  time.Now().Local(),
 	})
 
 	if err != nil {
@@ -146,8 +146,8 @@ func (s *service) UpdateCampaign(id string, c models.Campaign) error {
 	err = s.db.UpdateOne(bson.M{"_id": objid, "created_by": user.Sub}, bson.M{
 		"name":        c.Name,
 		"description": c.Description,
-		"start_date":  c.StartDate.Local(),
-		"end_date":    c.EndDate.Local(),
+		"start_date":  c.StartDate.Unix(),
+		"end_date":    c.EndDate.Unix(),
 		"banner_url":  c.BannerURL,
 		"updated_at":  time.Now(),
 	})

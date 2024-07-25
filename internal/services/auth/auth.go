@@ -6,6 +6,7 @@ import (
 	"campaign/internal/utils/jwt"
 	"errors"
 	"log/slog"
+	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
 )
@@ -69,7 +70,7 @@ func (s *service) Login(email, password string) (LoginRes, error) {
 func (s *service) Register(name, email, password, msisdn string) error {
 	s.db.SetCollection(models.UsersCollection)
 
-	err := s.db.InsertOne(bson.M{"name": name, "email": email, "password": password, "msisdn": msisdn})
+	err := s.db.InsertOne(bson.M{"name": name, "email": email, "password": password, "msisdn": msisdn, "created_at": time.Now().Local(), "updated_at": time.Now().Local()})
 
 	if err != nil {
 		slog.Error("Error inserting user", "error", err)
