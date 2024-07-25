@@ -108,7 +108,7 @@ func (c *campaignHandler) GetCampaignsHandler(w http.ResponseWriter, r *http.Req
 
 	if err != nil {
 		res := utils.WrapInResponse(err.Error(), nil)
-		w.WriteHeader(http.StatusInternalServerError)
+		w.WriteHeader(http.StatusNotFound)
 		_, _ = w.Write(res)
 		return
 	}
@@ -130,7 +130,7 @@ func (c *campaignHandler) GetCampaignByIDHandler(w http.ResponseWriter, r *http.
 	if err != nil {
 
 		res := utils.WrapInResponse(err.Error(), nil)
-		w.WriteHeader(http.StatusInternalServerError)
+		w.WriteHeader(http.StatusNotFound)
 		_, _ = w.Write(res)
 		return
 	}
