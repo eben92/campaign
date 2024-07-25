@@ -6,6 +6,7 @@ import (
 	"campaign/internal/utils/jwt"
 	"context"
 	"errors"
+	"fmt"
 	"log/slog"
 	"time"
 
@@ -105,7 +106,7 @@ func (s *service) GetCampaignByID(id string) (models.Campaign, error) {
 	if err != nil {
 		slog.Error("Error getting campaign", "error", err)
 
-		return campaign, errors.New("error getting campaign")
+		return campaign, fmt.Errorf("no campaigns with id: %s found", id)
 	}
 
 	return campaign, nil
@@ -134,7 +135,7 @@ func (s *service) UpdateCampaign(id string, c models.Campaign) error {
 	if err != nil {
 		slog.Error("Error updating campaign", "error", err)
 
-		return errors.New("error updating campaign")
+		return fmt.Errorf("could not update campaign with id: %s", id)
 	}
 
 	return nil
@@ -156,7 +157,7 @@ func (s *service) DeleteCampaign(id string) error {
 	if err != nil {
 		slog.Error("Error deleting campaign", "error", err)
 
-		return errors.New("error deleting campaign")
+		return fmt.Errorf("could not delete campaign with id: %s", id)
 	}
 
 	return nil
