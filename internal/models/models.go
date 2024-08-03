@@ -29,7 +29,8 @@ type Campaign struct {
 	StartDate   time.Time `json:"start_date" bson:"start_date"`
 	EndDate     time.Time `json:"end_date" bson:"end_date"`
 	BannerURL   string    `json:"banner_url" bson:"banner_url"`
-	CreatedBy   string    `json:"created_by"`
+	CreatedBy   string    `json:"created_by" bson:"created_by"`
 	CreatedAt   time.Time `json:"created_at" bson:"created_at"`
 	UpdatedAt   time.Time `json:"updated_at" bson:"updated_at"`
+	Status      string    `json:"status"`
 }

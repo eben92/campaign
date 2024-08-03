@@ -154,7 +154,12 @@ func (s *databaseService) FindMany(filter bson.M, result interface{}) error {
 
 func (s *databaseService) UpdateOne(filter bson.M, update bson.M) error {
 	c := s.db.Collection(string(s.collection))
-	_, err := c.UpdateOne(s.ctx, filter, update)
+
+	u := bson.M{
+		"$set": update,
+	}
+
+	_, err := c.UpdateOne(s.ctx, filter, u)
 
 	return err
 }

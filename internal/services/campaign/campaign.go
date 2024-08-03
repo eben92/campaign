@@ -50,6 +50,7 @@ func (s *service) CreateCampaign(c models.Campaign) error {
 		"end_date":    c.EndDate.Local(),
 		"banner_url":  c.BannerURL,
 		"created_by":  userID.Sub,
+		"status":      c.Status,
 		"created_at":  time.Now().Local(),
 		"updated_at":  time.Now().Local(),
 	})
@@ -150,6 +151,7 @@ func (s *service) UpdateCampaign(id string, c models.Campaign) error {
 		"end_date":    c.EndDate.Unix(),
 		"banner_url":  c.BannerURL,
 		"updated_at":  time.Now(),
+		"status":      c.Status,
 	})
 
 	if err != nil {
