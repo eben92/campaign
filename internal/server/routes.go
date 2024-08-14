@@ -37,6 +37,8 @@ func (s *Server) RegisterRoutes() http.Handler {
 
 	r.Route("/api", func(api chi.Router) {
 		api.Get("/health", s.healthHandler)
+		api.Post("/claim", s.healthHandler)
+		api.Post("/claim-status", s.healthHandler)
 		api.Route("/", s.authController)
 
 		api.Group(func(prot_api chi.Router) {
@@ -55,6 +57,7 @@ func (s *Server) authController(r chi.Router) {
 	client := s.db.Database()
 	handler := auth.NewAuthHandler(client)
 
+	r.Post("/subaccount", handler.SubAccount)
 	r.Post("/signin", handler.Signin)
 	r.Post("/create-account", handler.Signup)
 }
