@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+	"time"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
@@ -38,7 +39,7 @@ func (s *Server) RegisterRoutes() http.Handler {
 	r.Route("/api", func(api chi.Router) {
 		api.Get("/health", s.healthHandler)
 		api.Post("/claim", s.healthHandler)
-		api.Post("/claim-status", s.healthHandler)
+		api.Post("/claim-status", s.claimhealthHandler)
 		api.Route("/", s.authController)
 
 		api.Group(func(prot_api chi.Router) {
@@ -86,6 +87,13 @@ func (s *Server) HelloWorldHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) healthHandler(w http.ResponseWriter, r *http.Request) {
+	jsonResp, _ := json.Marshal(s.db.Health())
+	_, _ = w.Write(jsonResp)
+}
+
+func (s *Server) claimhealthHandler(w http.ResponseWriter, r *http.Request) {
+	time.Sleep(time.Second * 15)
+
 	jsonResp, _ := json.Marshal(s.db.Health())
 	_, _ = w.Write(jsonResp)
 }
