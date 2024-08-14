@@ -57,7 +57,6 @@ func (s *Server) authController(r chi.Router) {
 	client := s.db.Database()
 	handler := auth.NewAuthHandler(client)
 
-	r.Post("/subaccount", handler.SubAccount)
 	r.Post("/signin", handler.Signin)
 	r.Post("/create-account", handler.Signup)
 }
